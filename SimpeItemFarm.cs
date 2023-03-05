@@ -24,7 +24,7 @@ public class SimpleItemFarm
     //for the quant just put the Max quant of the item that can be gotten from the logger. or leave it blank and put the number in the Exmaple(here); above
     public void Example(int quant = 9999)
     {
-        if (Core.CheckInventory("item"))
+        if (Core.CheckInventory("item", quant))
             return;
 
         //Example 1:
