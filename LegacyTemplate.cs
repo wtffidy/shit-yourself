@@ -23,18 +23,14 @@ public class LegacyTemplate
         Core.SetOptions(false);
     }
 
-    // string[] RequiredItems = { "Pirate Booty I", "Pirate Booty II", "Pirate Booty III", "Pirate Booty IV", "Pirate Booty V", "Pirate Booty VI", "Pirate Booty VII", "Pirate Booty VIII", "Pirate Booty IX", "Pirate Booty X", "Pirate Booty XI", "Pirate Booty XII", "Pirate Booty XIII", "Pirate Booty XIV", "Pirate Booty XV" };
-
-
     public void TokenQuests()
     {
-        if (!Core.isSeasonalMapActive("BlazeBeard"))
-            return;
-
         Story.PreLoad(this);
 
+        //LegacyQuestManager handles drops & required tokens and will sort out automaticly where you are in the questline.
+        //Insert Questids after "Questlogic," in order.
         Story.LegacyQuestManager(QuestLogic, 1, 2, 3);
-
+        
         void QuestLogic()
         {
             //InsertQuestID from the LegacyQuestManager in order, per case
@@ -50,37 +46,15 @@ public class LegacyTemplate
                     break;
 
                 case 3:
-                //There area  few ways to use Core.BuyItem (itemname, ItemID, or ShopItemID)
-                //shop item id can be gotten through the Grabber, just open teh shop goto the shop items tab in grabber, and hit grab. the ShopItemID will be on the Right you may need to scroll
-                Shop
-                    Core.BuyItem("map", shopID, "Itename", quant);
+                    //There area  few ways to use Core.BuyItem (itemname, ItemID, or ShopItemID)
+                    //ShopItemID can be gotten through the Grabber, just open teh shop goto the shop items tab in grabber, and hit grab. the ShopItemID will be on the Right you may need to scroll.
+                    //ShopItemID is used when there are more then 1 item in the shop with the same name.
+                    Core.BuyItem("map", shopID, "ItemName", quant);
                     Core.BuyItem("map", shopID, itemID, quant);
-                    Core.BuyItem("map", shopID, "Itename", ShopItemID, quant);
-                    Core.BuyItem("map", shopID, "Itename", quant);
+                    Core.BuyItem("map", shopID, "ItemName", ShopItemID, quant);
                     break;
 
             }
         }
     }
-}
-
-{
-    private IScriptInterface Bot => IScriptInterface.Instance;
-private CoreBots Core => CoreBots.Instance;
-
-public void ScriptMain(IScriptInterface Bot)
-{
-    Core.SetOptions();
-
-    Example();
-    Core.SetOptions(false);
-}
-
-public void Example()
-{
-    if (Core.CheckInventory("item"))
-        return;
-
-    //INSERT CODE HERE      
-}
 }
