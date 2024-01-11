@@ -3,7 +3,6 @@ from tkinter import ttk
 from PIL import Image, ImageTk
 import requests
 from io import BytesIO
-import os
 import pyperclip
 
 def download_image(url):
@@ -28,8 +27,23 @@ def create_role_widgets(frame, person_name, roles):
         description_label = ttk.Label(frame, text=description, font=("Helvetica", 10))
         description_label.pack(pady=5)
 
-        copy_button = ttk.Button(frame, text="Copy Role Command", command=lambda r=role: apply_role(person_name.get(), r))
+        # Adding a custom style for the "Copy" button with a different text color
+        copy_button = ttk.Button(frame, text="Copy Role Command", command=lambda r=role: apply_role(person_name.get(), r),
+                                  style="Copy.TButton")
         copy_button.pack(pady=5)
+
+def update_background_color(window, target_color, current_color, step, delay):
+    def interpolate(c1, c2, t):
+        return int(c1[0] * (1 - t) + c2[0] * t), int(c1[1] * (1 - t) + c2[1] * t), int(c1[2] * (1 - t) + c2[2] * t)
+
+    def update_color():
+        nonlocal current_color
+        if current_color != target_color:
+            current_color = interpolate(current_color, target_color, step)
+            window.configure(bg="#%02x%02x%02x" % current_color)
+            window.after(delay, update_color)
+
+    update_color()
 
 def main():
     roles = {
@@ -102,13 +116,28 @@ def main():
     scrollbar = ttk.Scrollbar(window, orient="vertical", command=canvas.yview)
     scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
 
-    frame = ttk.Frame(canvas)
+    frame = ttk.Frame(canvas, style="My.TFrame")
     canvas.create_window((0, 0), window=frame, anchor="nw")
 
     create_role_widgets(frame, person_name_entry, roles)
 
     frame.bind("<Configure>", lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
     canvas.configure(yscrollcommand=scrollbar.set)
+
+    # Adding a custom style for the frame
+    window.style = ttk.Style()
+    window.style.configure("My.TFrame", background="#fff")
+
+    # Start smoothly fading background color
+    target_color = (255, 255, 255)  # White background
+    current_color = (255, 255, 255)  # Initial color (white)
+    update_background_color(window, target_color, current_color, step=0.01, delay=10)
+
+    # Adding a custom style for the "Copy" button with a different text color
+    window.style.configure("Copy.TButton", font=("Helvetica", 10), foreground="#333", background="#4CAF50")
+
+    # Bind mouse wheel event to canvas for scrolling
+    canvas.bind_all("<MouseWheel>", lambda event: canvas.yview_scroll(int(-1 * (event.delta / 120)), "units"))
 
     window.mainloop()
 
