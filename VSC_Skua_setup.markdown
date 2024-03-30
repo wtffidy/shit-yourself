@@ -57,7 +57,7 @@ Under `Extentions`, we'll need to Install These 2 (just search for them):
  
 - Secondly: `control + k, followed by control + o (to select a folder)` > navigate to: > `C:\Users\User\Documents\Skua`, click on the `Scripts` folder, and in he bottom right click `Select Folder`
 
-On the Right hand side, you'll see several Icons ![VSC Icons](https://i.imgur.com/l5nbsFf.png).
+9. On the Right hand side, you'll see several Icons ![VSC Icons](https://i.imgur.com/l5nbsFf.png).
 In order[of the image]: 
     - Explorer
     - Search
@@ -67,7 +67,7 @@ In order[of the image]:
     - Git Lese (you may not have this.)
     - Additonal Views (Not usfull to you.)
 
-9. With the extention installed, and scripts folder opened inside VScode:
+10. With the extention installed, and scripts folder opened inside VScode:
     - We'll need to run the Following Cmds mentioned on Line 20 Above
         - as a reminder: 
             1. `dotnet new classlib` [add --force if it asks, ex; `dotnet new classlib --force`]
