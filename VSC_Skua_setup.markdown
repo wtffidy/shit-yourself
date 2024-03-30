@@ -78,7 +78,7 @@ In order[of the image]:
         - give it a moment
 
     - With the `Scripts.csproj` file Generated, and approriate packages added, we can now replace this file with: [Scripts.csproj](https://github.com/wtffidy/shit-yourself/blob/main/Scripts.csproj), just copy the text from there, and replace all inside the `Scripts.csproj` file.
-
+    - replace all `$InstallPathforSkua$` with your install path to Skua **Default being `C:\Program Files\Skua`** - yours may vary depending on where you installed it.
  once again:
  - Press: `control + shift + p`, type: "Restore" find: ![Restore All ProJcets](https://i.imgur.com/yZ3xbzh.png), click it / down arrow and press enter.
         - give it a moment
