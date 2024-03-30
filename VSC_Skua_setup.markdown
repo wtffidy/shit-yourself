@@ -47,7 +47,7 @@ Things you'll need [ Control + Click to view images / goto links.]:
     - Under Local path; **navigate to: > `C:\Users\User\Documents\Skua**, and **Select Folder** in the bottom right.
     - ![Example(*User* is a place holder)](https://i.imgur.com/SP4OBNZ.png) 
 
-7. Close Github Desktop (this is where you will get your updates now [just hit "Fetch Origin" ![Fetch Origin](https://i.imgur.com/SP4OBNZ.png)]) and itll automaticly pull the updates (same as if u where to hit get scripts > update / reset scripts through the client/manager).
+7. Close Github Desktop (this is where you will get your updates now [just hit "Fetch Origin" ![Fetch Origin](https://i.imgur.com/J6vMvle.png)]) and itll automaticly pull the updates (same as if u where to hit get scripts > update / reset scripts through the client/manager).
 
 8. Open VScode and do the following;
 
