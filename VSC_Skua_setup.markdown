@@ -10,8 +10,8 @@ Things you'll need [ Control + Click to view images / goto links.]:
 - VSCode
 [VSCode](https://code.visualstudio.com/download)
 
-- Scripts Git(to setup Github Desktop later on)
-[Scripts Git](https://github.com/BrenoHenrike/Scripts.git)
+- Scripts Git(to setup Github Desktop later on (copy/paste))
+https://github.com/BrenoHenrike/Scripts.git
 
 - csproj file for use later
 [csproj file](https://github.com/wtffidy/shit-yourself/blob/main/Scripts.csproj)
