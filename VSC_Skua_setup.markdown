@@ -30,7 +30,7 @@ Things you'll need [ Control + Click to view images / goto links.]:
 # Setup Steps [From *after* `Skua` installation]:
 
 0. Download all afformentioned items.
-00. if `Skua` / `Skua Manager` is open in the system tray (` bottom right`), please make sure it is closed **FULLY**.
+    - if `Skua` / `Skua Manager` is open in the system tray (` bottom right`), please make sure it is closed **FULLY**.
 
 1. Launch `Skua`
 
