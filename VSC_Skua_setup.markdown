@@ -16,7 +16,7 @@ Things you'll need [ Control + Click to view images / goto links.]:
 - csproj file for use later
 [csproj file](https://github.com/wtffidy/shit-yourself/blob/main/Scripts.csproj)
 
--GitHub Desktop
+- GitHub Desktop
 [Github Desktop](https://desktop.github.com/)
 
 
