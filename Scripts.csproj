@@ -1,0 +1,45 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>None</ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>
+    <LangVersion>11.0</LangVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="Skua.Core">
+      <HintPath>C:\Program Files\Skua\Skua AQW Bot\Assemblies\Skua.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Skua.Core.Interfaces">
+      <HintPath>C:\Program Files\Skua\Skua AQW Bot\Assemblies\Skua.Core.Interfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="Skua.Core.Models">
+      <HintPath>C:\Program Files\Skua\Skua AQW Bot\Assemblies\Skua.Core.Models.dll</HintPath>
+    </Reference>
+    <Reference Include="Skua.Core.Utils">
+      <HintPath>C:\Program Files\Skua\Skua AQW Bot\Assemblies\Skua.Core.Utils.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Windows.Forms">
+      <HintPath>C:\Windows\Microsoft.NET\Framework\v4.0.30319\System.Windows.Forms.dll</HintPath>
+    </Reference>
+    <Reference Include="System.IO.FileSystem.Watcher">
+      <HintPath>C:\Program Files\dotnet\shared\Microsoft.NETCore.App\7.0.13\System.IO.FileSystem.Watcher.dll</HintPath>
+    </Reference>
+    <Reference Include="CommunityToolkit.Mvvm">
+      <HintPath>C:\Program Files\Skua\Skua AQW Bot\Assemblies\CommunityToolkit.Mvvm.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="z_CompiledScript.cs" />
+  </ItemGroup>
+
+</Project>
