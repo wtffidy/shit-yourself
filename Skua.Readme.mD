@@ -50,7 +50,7 @@
                * **you will not use this unless told by a dev** 
 
 
-## Basic Functionality and a look around Skua
+# Basic Functionality and a look around Skua
 
 1. `Scripts` Button:
    - **Explained Above!**
