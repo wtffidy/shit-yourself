@@ -1,4 +1,4 @@
-~Installation & Setup:~
+# Installation & Setup:
 
 **What is required for this installation(all links are dirrect DL links):**
 1. [.net 6 SDk(x64)](<https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/sdk-6.0.420-windows-x64-installer>)
