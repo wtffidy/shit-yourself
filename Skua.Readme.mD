@@ -117,4 +117,4 @@
     8. Repeat step 7 every time you wish to access the plugin.
 
 
-# ***For futher information or questions, Join the [Discord](https://discord.gg/pearlharbor) ***
+# ***For futher information or questions, Join the [Discord](https://discord.gg/pearlharbor)***
