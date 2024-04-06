@@ -36,9 +36,9 @@
             1. Boosters
                 - [Enable/Disable] the use of Boosts during scripts if called for (Boosters include: Gold/Class/Reputation/Experience)
             2. Nation Farms
-               1. [Enable/Disabled] Sell Voucher of Nulgath if not needed (during scripts/farming things such as `Supplies to spin the wheel`, if this is checked it will sell the `Voucher of Nulgath(member)`, when its not the item its going for.)
-               2 [Enable/Disabled] Do Swindles Return during Supplies (Wether it should do the quest `Swindles Return` during Scripts / farming methods such as `Supplies to spin the wheel`)
+               * [Enable/Disabled] Sell Voucher of Nulgath if not needed (during scripts/farming things such as `Supplies to spin the wheel`, if this is checked it will sell the `Voucher of Nulgath(member)`, when its not the item its going for.)
+               * [Enable/Disabled] Do Swindles Return during Supplies (Wether it should do the quest `Swindles Return` during Scripts / farming methods such as `Supplies to spin the wheel`)
             3. Bludrut Brawl (PVP) 
-               1. (this is deprecated[no longer used], as killing all mobs returns 10 trophies rather then a measily 2..or 3 i do not remmbe. )
+               * (this is deprecated[no longer used], as killing all mobs returns 10 trophies rather then a measily 2..or 3 i do not remmbe. )
             4. Bot Creatures Only
-               1. **you will not use this unless told by a dev** 
+               * **you will not use this unless told by a dev** 
