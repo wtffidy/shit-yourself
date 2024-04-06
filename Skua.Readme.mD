@@ -106,7 +106,7 @@
       3. you may now come to us with your issue and provide screenshots and a good explanation of teh issue.
 9.  `Plugins`
     - this will be Empty as of Currently (unless you have the `Cosmetics Plugin[Beta]` by Lord Exelot [CosmeticsPlugin](<https://drive.google.com/file/d/1scL9o5bgaQLNZe-dRwrZbS-LOKx4jKeR/view?usp=share_link>))
-    **How to install the Cosmetics Plugin for Skua**
+    ### How to install the Cosmetics Plugin for Skua
     1. Download the .dll file from the link in the pins.
     2. Locate the file on your PC (usually in your /Downloads/ folder).
     3. Copy (ctrl+c) or Cut (ctrl+x) the .dll file.
