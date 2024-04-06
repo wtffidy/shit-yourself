@@ -17,8 +17,8 @@
 4. it is strongly recomended before you start scripts to setup your `CoreBot Options` ... Options
     - this can be done by going to `Options > CoreBots`, and setting the Following:
         * Tab 1 [Loadout]:
-            * `Solo/Farm Class` & the `Mode` (meaning things such as `defence`, `Attack`, `Basic`, etc)
-            * `Solo/Farm Equipment` - this will be equiped when scripts call the `Core.EquipClass();`
+            1. `Solo/Farm Class` & the `Mode` (meaning things such as `defence`, `Attack`, `Basic`, etc)
+            2. `Solo/Farm Equipment` - this will be equiped when scripts call the `Core.EquipClass();`
         * Tab 2[Options]: 
             Really the only things you should Edit here are:
             1. Room Number
