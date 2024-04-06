@@ -1,6 +1,6 @@
 # Installation & Setup:
 
-**What is required for this installation(all links are dirrect DL links):**
+## What is required for this installation(all links are dirrect DL links):
 1. [.net 6 SDk(x64)](<https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/sdk-6.0.420-windows-x64-installer>)
 
 2. [CleanFlash](<https://drive.google.com/file/d/1R0KrjAyHTz6KfcAp_zsRh2Mrv25J0PbI/view>) (and for it to be installed properly according to this: [CleanFlash Installation](https://imgur.com/ztsLYZ1))
@@ -9,7 +9,7 @@
 
 - install either of the `.net 6 sdk` or `CleanFlash` before `Skua`.
 
-**Once everything is properly installed:**
+## Once everything is properly installed:
 
 1. Open `Skua` or the `Skua Manager` (these will be placed on your desktop by default.)
 
@@ -50,7 +50,7 @@
                * **you will not use this unless told by a dev** 
 
 
-# Basic Functionality and a look around Skua
+## Basic Functionality and a look around Skua
 
 1. `Scripts` Button:
    - **Explained Above!**
