@@ -51,8 +51,8 @@ https://github.com/BrenoHenrike/Scripts.git
 
 8. Open VScode and do the following;
 
-- First we're going to Install some Extentions;
-Under `Extentions`, we'll need to Install These 2 (just search for them):
+- First we're going to Install an extention;
+Under `Extentions`, we'll need to Install This (just search for them):
         - `ms-dotnettools.csharp` 
  
 - Secondly: `control + k, followed by control + o (to select a folder)` > navigate to: > `C:\Users\User\Documents\Skua`, click on the `Scripts` folder, and in he bottom right click `Select Folder`
