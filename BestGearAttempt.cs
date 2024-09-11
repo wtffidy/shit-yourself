@@ -19,6 +19,7 @@ using Skua.Core.Models.Quests;
 using Skua.Core.Utils;
 using System.Text;
 using Skua.Core.Models;
+using Skua.Core.Options;
 
 public class BestGearAttempt
 {
@@ -29,6 +30,15 @@ public class BestGearAttempt
     private CoreFarms Farm = new();
     private CoreStory Story = new();
     private CoreDailies Daily = new();
+
+
+    public string OptionsStorage = "FarmerJoePet";
+    public bool DontPreconfigure = true;
+    public List<IOption> Options = new()
+    {
+        new Option<MetaTypes>("MetaType", "metaType for GearSet", "Pick The Meta Type (MetaType = things like dmgAll, exp, gold, etc)", MetaTypes.dmgAll),
+        CoreBots.Instance.SkipOptions,
+    };
 
     public void ScriptMain(IScriptInterface Bot)
     {
@@ -42,8 +52,8 @@ public class BestGearAttempt
 
     public void Example(bool TestMode = false)
     {
-        Core.Logger("Bot will Attempt to Equip the Best Gear for `dmgAll`, this will if it works, be a selectable option in the future.");
-        EquipBestByMetaType("dmgAll");
+        Core.Logger($"Bot will Attempt to Equip the Best Gear for {Bot.Config.Get<MetaTypes>("MetaType")}... (sorry i dont think ill be able todo multiple meta types)");
+        EquipBestByMetaType(Bot.Config.Get<MetaTypes>("MetaType").ToString());
 
         #region EquipBestByMetaType
 
@@ -132,15 +142,16 @@ public class BestGearAttempt
         // Helper method to equip the best item based on a specific meta type
         void EquipBestItem(IEnumerable<(ItemBase Item, string MetaType, double Value, ItemCategory Category)> items, string metaType)
         {
-            var bestItem = items
+            var (Item, MetaType, Value, Category) = items
                 .Where(x => x.MetaType.Equals(metaType, StringComparison.OrdinalIgnoreCase))
                 .OrderByDescending(x => x.Value)
                 .FirstOrDefault();
 
-            if (bestItem.Item != null)
+            if (Item != null)
             {
-                Core.Equip(bestItem.Item.Name);
-                Bot.Wait.ForTrue(() => Bot.Inventory.IsEquipped(bestItem.Item.Name), 20);
+                Bot.Wait.ForTrue(() => Bot.Bank.ToInventory(Item.Name), 20);
+                Core.Equip(Item.Name);
+                Bot.Wait.ForTrue(() => Bot.Inventory.IsEquipped(Item.Name), 20);
             }
         }
 
@@ -154,6 +165,13 @@ public class BestGearAttempt
         rep,
         cp,
         exp,
+        Undead,
+        Chaos,
+        Drakath,
+        Elemental,
         Dragonkin,
+        Human,
+        Orc,
     };
+
 }
