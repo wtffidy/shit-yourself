@@ -42,7 +42,8 @@ public class BestGearAttempt
 
     public void Example(bool TestMode = false)
     {
-          EquipBestByMetaType("dmgAll");
+        Core.Logger("Bot will Attempt to Equip the Best Gear for `dmgAll`, this will if it works, be a selectable option in the future.");
+        EquipBestByMetaType("dmgAll");
 
         #region EquipBestByMetaType
 
@@ -148,11 +149,11 @@ public class BestGearAttempt
 
     public enum MetaTypes
     {
-dmgAll,
-gold,
-rep,
-cp,
-exp,
-Dragonkin,
+        dmgAll,
+        gold,
+        rep,
+        cp,
+        exp,
+        Dragonkin,
     };
 }
