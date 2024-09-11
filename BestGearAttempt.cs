@@ -32,7 +32,7 @@ public class BestGearAttempt
     private CoreDailies Daily = new();
 
 
-    public string OptionsStorage = "FarmerJoePet";
+    public string OptionsStorage = "BestGearAttempt";
     public bool DontPreconfigure = true;
     public List<IOption> Options = new()
     {
