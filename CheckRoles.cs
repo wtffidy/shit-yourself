@@ -25,9 +25,13 @@ public class CheckRoles
 
     public void Evaluate()
     {
-        #region Items
+        while (!Bot.ShouldExit && !Bot.Player.Loaded)
+            Core.Sleep();
 
-        Bot.Bank.Open();
+
+        Core.Join("Battleon-999999");
+        if (!Bot.Bank.Items.Any(x => x != null))
+            Bot.Bank.Open();
         Bot.Quests.Load(forgeEnhIDs.Concat(new[] { 793, 2937, 8042 }).ToArray());
         Bot.Wait.ForTrue(() => Bot.Bank.Items.Any(), 20);
 
@@ -40,57 +44,65 @@ public class CheckRoles
         processItems("world.myAvatar.houseitems");
 
 
+        #region OutPut
         // The actual output
         Bot.ShowMessageBox(
+    $"Ｅｎｈａｎｃｅｍｅｎｔｓ\n" + // Added blank line here
+    $"(Victor of War) Valiance:\t\t\t\t{Checkbox(Core.isCompletedBefore(8741))}\n" +
+    $"(Conductor of War) Arcana's Concerto:\t\t{Checkbox(Core.isCompletedBefore(8742))}\n" +
+    $"(Deliverance of War) Elysium:\t\t\t{Checkbox(Core.isCompletedBefore(8821))}\n" +
+    $"(Reflectionist of War) Examen:\t\t\t{Checkbox(Core.isCompletedBefore(8825))}\n" +
+    $"(Penitent of War) Pentience:\t\t\t{Checkbox(Core.isCompletedBefore(8822))}\n" +
+    $"(Miltonious of War) Ravenous:\t\t\t{Checkbox(Core.isCompletedBefore(9560))}\n" +
+    $"(Shadow of War) Dauntless:\t\t\t{Checkbox(Core.isCompletedBefore(9172))}\n" +
 
-            // Enhancements
-            $"(Victor of War) Valiance:\t\t\t\t{Checkbox(Core.isCompletedBefore(8741))}\n" +
-            $"(Conductor of War) Arcana's Concerto:\t\t{Checkbox(Core.isCompletedBefore(8742))}\n" +
-            $"(Deliverance of War) Elysium:\t\t\t{Checkbox(Core.isCompletedBefore(8821))}\n" +
-            $"(Reflectionist of War) Examen:\t\t\t{Checkbox(Core.isCompletedBefore(8825))}\n" +
-            $"(Penitent of War) Pentience:\t\t\t{Checkbox(Core.isCompletedBefore(8822))}\n" +
-            $"(Miltonious of War) Ravenous:\t\t\t{Checkbox(Core.isCompletedBefore(9560))}\n" +
-            $"(Shadow of War) Dauntless:\t\t\t{Checkbox(Core.isCompletedBefore(9172))}\n" +
+    $"Ｃｌａｓｓｅｓ\n" +
+    "(Avenger of War) " + importantItemCheckbox(3, "Chaos Avenger") +
+    "(ArchMage of War) " + importantItemCheckbox(3, "ArchMage") +
+    "(Revenant of War) " + importantItemCheckbox(3, "Legion Revenant") +
+    "(Highlord of War) " + importantItemCheckbox(3, "Void Highlord", "Void Highlord (IoDA)") +
+    "(Vera of War) " + importantItemCheckbox(3, "Verus DoomKnight") +
+    "(Eternal Dragon of War) " + importantItemCheckbox(2, "Dragon of Time") +
+    "(Diviner of War) " + importantItemCheckbox(3, "Arcana Invoker") +
+    "(Tempest of War) " + importantItemCheckbox(2, "Sovereign of Storms") +
 
-            // Classes
-            importantItemCheckbox(4, "Necrotic Sword of Doom") +
-            importantItemCheckbox(3, "Hollowborn Sword of Doom") +
-            importantItemCheckbox(5, "Chaos Avenger") +
-            importantItemCheckbox(5, "Providence") +
-            importantItemCheckbox(5, "ArchMage") +
-            importantItemCheckbox(5, "Legion Revenant") +
-            importantItemCheckbox(5, "Void Highlord", "Void Highlord (IoDA)") +
-            importantItemCheckbox(4, "Verus DoomKnight") +
-            importantItemCheckbox(5, "Dragon of Time") +
-            importantItemCheckbox(5, "Arcana Invoker") +
+    $"Ｗｅａｐｏｎｓ\n" +
+    "(Prisoner of War) " + importantItemCheckbox(1, "Hollowborn Reaper's Scythe") +
+    "(Primordial of War) " + importantItemCheckbox(2, "Necrotic Sword of Doom") +
+    "(Wraith of War) " + importantItemCheckbox(2, "Hollowborn Sword of Doom") +
+    "(Legatus of War) " + importantItemCheckbox(1, "Necrotic Blade of the Underworld") +
+    "(Chauvinist of War) " + importantItemCheckbox(1, "Necrotic Sword of the Abyss") +
+    "(Prudence of War) " + importantItemCheckbox(3, "Providence") +
+    "(Sinner of War) " + importantItemCheckbox(3, "Sin of the Abyss") +
+    "(Deacon of War) " + importantItemCheckbox(2, "Exalted Apotheosis") +
+    "(Deacon of War) " + importantItemCheckbox(2, "Dual Exalted Apotheosis") +
+    "(Celestial of War) " + importantItemCheckbox(1, "Greatblade of the Entwined Eclipse") +
+    "(Starlight of War) " + importantItemCheckbox(2, "Star Light of the Empyrean", "Star Lights of the Empyrean") +
 
-            // Weapons
-            importantItemCheckbox(3, "Necrotic Blade of the Underworld") +
-            importantItemCheckbox(3, "Necrotic Sword of the Abyss") +
-            importantItemCheckbox(5, "Sin of the Abyss") +
-            importantItemCheckbox(4, "Exalted Apotheosis") +
-            importantItemCheckbox(4, "Dual Exalted Apotheosis") +
-            importantItemCheckbox(3, "Hollowborn Reaper's Scythe") +
-            importantItemCheckbox(3, "Greatblade of the Entwined Eclipse") +
+    $"Ａｒｍｏｒ\n" +
+    $"(Ascendant of War) Awescended:\t\t\t{Checkbox(Core.isCompletedBefore(8042))}\n" +
+    "(Radiant Goddess of War) " + importantItemCheckbox(1, "Radiant Goddess of War") +
 
-            // Armor
-            $"(Ascendant of War) Awescended:\t\t\t{Checkbox(Core.isCompletedBefore(8042))}\n" +
-            importantItemCheckbox(4, "Radiant Goddess of War") +
+  $"Ｃｈｒｏｎｏ Ｃｈｅｃｋ\n" +
+    OutPutOwnedChrono() +
 
-           //Chrono Check
-           OutPutOwnedChrono() +
+    $"Ｅｎｄ Ｃｈｅｃｋｓ\n" +
+    $"Apprentice of War:\t\t\t\t{Checkbox(ApprenticeOfWar())}\n" +
+    $"Mastere of War:\t\t\t\t\t{Checkbox(MastereofWar())}\n" +
+    $"Apostle of War:\t\t\t\t\t{Checkbox(Apostleofwar())}\n" +
+    $"Bishop of War:\t\t\t\t\t{Checkbox(BishopofWar())}\n" +
+    $"Cardinal of War:\t\t\t\t\t{Checkbox(CardinalofWar())}\n" +
+    $"51% DMG All Weapons:\t\t\t\t{dmgAll51Items} out of 22\n\n" +
 
+    "\n" +
+    "\n" +
 
-            // OverAll Role Checks
-            $"Apprentice of War:\t\t\t\t{Checkbox(ApprenticeOfWar())}\n" +
-            $"Mastere of War:\t\t\t\t{Checkbox(MastereofWar())}\n" +
-            $"Apostle of War:\t\t\t\t{Checkbox(Apostleofwar())}\n" +
-            $"Bishop of War:\t\t\t\t{Checkbox(BishopofWar())}\n" +
-            $"Cardinal of War:\t\t\t\t{Checkbox(CardinalofWar())}\n" +
-            $"51% DMG All Weapons:\t\t{dmgAll51Items} out of 22\n\n" +
-            GetQuestStatusReport(),
+    $"Ｉｎｆｏ  Ｆｏｒ  Ｐｌａｙｅｒ\n" +
+    GetQuestStatusReport(),
 
-           "Evaluation Complete");
+    "Evaluation Complete"
+);
+
 
         #endregion
 
@@ -111,23 +123,6 @@ public class CheckRoles
             }
         }
 
-    }
-
-    private bool ChronoOwned(out string ownedChronoClass)
-    {
-        // Filter for Chrono/Time classes
-        string[] ChronoClasses = hmClasses.Where(x => x.Contains("Chrono") || x.Contains("Time")).ToArray();
-
-        // Find the first owned Chrono class from Inventory or Bank
-        var chronoClass = Bot.Inventory.Items
-            .Concat(Bot.Bank.Items)
-            .FirstOrDefault(x => ChronoClasses.Contains(x.Name));
-
-        // Set the out parameter to the found class name or an empty string if not found
-        ownedChronoClass = chronoClass?.Name ?? string.Empty;
-
-        // Return true if a Chrono class was found, otherwise false
-        return !string.IsNullOrEmpty(ownedChronoClass);
     }
 
     private bool ApprenticeOfWar()
@@ -153,18 +148,27 @@ public class CheckRoles
 
     private bool BishopofWar()
     {
-        return Apostleofwar() && HasItemWithMinimalBoost(1.5f, false);
+        return Apostleofwar()
+            // Check for 51% damage boost weapon
+            && Bot.Inventory.Items.Concat(Bot.Bank.Items).Any(item => item != null && Core.GetBoostFloat(item, "dmgAll") >= 1.5f)
+            // Check for Bishop Data Classes (index 0 to 6)
+            && Core.CheckInventory(BishopRequirements[0..7], any: true, toInv: false)
+            // Check for Nulgath insignias or items (index 7 to 9)
+            && Core.CheckInventory(BishopRequirements[7..10], any: true, toInv: false)
+            // Check for Dage insignias or items (index 10 to end)
+            && Core.CheckInventory(BishopRequirements[10..], any: true, toInv: false);
     }
 
     private bool CardinalofWar()
     {
-        return BishopofWar() && HasItemWithMinimalBoost();
+        // Count how many of the Bishop classes are owned
+        int bishopClassesOwned = BishopRequirements
+            .Take(7) // The first 7 items are Bishop classes
+            .Count(cls => Core.CheckInventory(new[] { cls }, any: true, toInv: false));
+
+        // Check if at least 4 Bishop classes are owned
+        return BishopofWar() && bishopClassesOwned >= 4;
     }
-
-
-
-
-
 
 
     #region ArmyRoles
@@ -305,7 +309,7 @@ public class CheckRoles
     ("Forge Cape Enhancement", 8758),
     ("Examen", 8825)
       };
-    private string[] hmClasses =
+    private string[] HeroMartClasses =
     {
         "CardClasher",
         "Chrono Chaorruptor",
@@ -360,9 +364,7 @@ public class CheckRoles
         "Unchained Rocker",
     };
     string[] ApostleWeapons = new[]
- {
-        "Apostate Alpha",
-        "Thaumaturgus Alpha",
+    {
         "Apostate Omega",
         "Thaumaturgus Omega",
         "Apostate Ultima",
@@ -377,6 +379,27 @@ public class CheckRoles
         "Warden Insignia",
         "Engineer Insignia"
     };
+    string[] BishopRequirements = new[]
+ {
+    // Bishop Classes
+    "Chaos Avenger",
+    "ArchMage",
+    "Legion Revenant",
+    "Void HighLord",
+    "Dragon of Time",
+    "Verus DoomKnight",
+    "Arcana Invoker",
+
+    // Nulgath Insignias and Items
+    "Nulgath Insignia",
+    "Sin of the Abyss",
+    "Sin of Revontheus",
+
+    // Dage Insignias and Items
+    "Dage the Evil Insignia",
+    "Necrotic Blade of the Underworld"
+};
+
     #endregion
 
     #region Methods
@@ -527,13 +550,29 @@ public class CheckRoles
 
         return unlockedQuests;
     }
+    private bool ChronoOwned(out string ownedChronoClass)
+    {
+        // Filter for Chrono/Time classes
+        string[] ChronoClasses = HeroMartClasses.Where(x => x.Contains("Chrono") || x.Contains("Time")).ToArray();
+
+        // Find the first owned Chrono class from Inventory or Bank
+        var chronoClass = Bot.Inventory.Items
+            .Concat(Bot.Bank.Items)
+            .FirstOrDefault(x => ChronoClasses.Contains(x.Name));
+
+        // Set the out parameter to the found class name or an empty string if not found
+        ownedChronoClass = chronoClass?.Name ?? string.Empty;
+
+        // Return true if a Chrono class was found, otherwise false
+        return !string.IsNullOrEmpty(ownedChronoClass);
+    }
     public string OutPutOwnedChrono()
     {
         // Variables to store the results
         bool isChronoOwned = ChronoOwned(out string ownedChronoClass);
 
         // Format the report line with the checkmark after the owned Chrono class name
-        string reportLine = $"ChronoMancer Owned? {(isChronoOwned ? $"[{ownedChronoClass}]\t{Checkbox(true)}" : Checkbox(false))}\n";
+        string reportLine = $"Chronomancer Owned? {(isChronoOwned ? $"[{ownedChronoClass}]\t{Checkbox(true)}" : Checkbox(false))}\n";
 
         return reportLine;
     }
