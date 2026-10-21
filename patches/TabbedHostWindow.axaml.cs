@@ -297,10 +297,10 @@ public partial class TabbedHostWindow : Window
 
         Opened += TabbedHostWindow_Opened;
         PositionChanged += (s, e) => OnWindowPositionChanged(e.Point);
-        SizeChanged += (s, e) => { DoReposition(); UpdateTabScrollButtons(); };
+        SizeChanged += (s, e) => { ScheduleReposition(); UpdateTabScrollButtons(); };
         
         PropertyChanged += (s, e) => { if (e.Property == WindowStateProperty || e.Property == IsVisibleProperty) ScheduleReposition(); };
-        Activated += (s, e) => { DoReposition(); UpdateTabScrollButtons(); };
+        Activated += (s, e) => { ScheduleReposition(); UpdateTabScrollButtons(); };
         Closing += OnWindowClosing;
         Closed += OnWindowClosed;
 
