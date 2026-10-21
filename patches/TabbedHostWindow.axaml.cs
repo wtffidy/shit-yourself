@@ -1290,7 +1290,8 @@ public partial class TabbedHostWindow : Window
                         newPos.Y + tile.OffsetY,
                         tile.Width,
                         tile.Height,
-                        SWP_SHOWWINDOW | SWP_NOACTIVATE | SWP_ASYNCWINDOWPOS | SWP_NOZORDER);
+                        SWP_NOACTIVATE | SWP_ASYNCWINDOWPOS | SWP_NOZORDER);
+                    ShowWindow(tile.Hwnd, SW_SHOW);
                 }
             }
             return;
@@ -1394,7 +1395,9 @@ public partial class TabbedHostWindow : Window
             _lastFastX = Position.X;
             _lastFastY = Position.Y;
 
-            uint baseFlags = SWP_SHOWWINDOW | SWP_NOACTIVATE | SWP_ASYNCWINDOWPOS | SWP_NOZORDER;
+            // Do not include SWP_SHOWWINDOW in queued position requests. A stale async request
+            // can otherwise re-show a child after the host has been hidden from the tray.
+            uint baseFlags = SWP_NOACTIVATE | SWP_ASYNCWINDOWPOS | SWP_NOZORDER;
 
             var activeWindows = InstancesTabControl.Items.OfType<TabItem>()
                 .Where(t => _tabs.ContainsKey(t))
@@ -1438,6 +1441,7 @@ public partial class TabbedHostWindow : Window
                         Height = cellH
                     });
                     SetWindowPos(activeWindows[i].ChildHwnd, IntPtr.Zero, x + c * cellW, y + r * cellH, cellW, cellH, baseFlags);
+                    ShowWindow(activeWindows[i].ChildHwnd, SW_SHOW);
                     if (activeWindows[i].IsThrottled)
                     {
                         activeWindows[i].IsThrottled = false;
@@ -1481,6 +1485,7 @@ public partial class TabbedHostWindow : Window
                 if (activeChildHwnd != IntPtr.Zero)
                 {
                     SetWindowPos(activeChildHwnd, IntPtr.Zero, x, y, w, h, baseFlags);
+                    ShowWindow(activeChildHwnd, SW_SHOW);
                     if (activeInfo != null && activeInfo.IsThrottled)
                     {
                         activeInfo.IsThrottled = false;
@@ -1501,7 +1506,9 @@ public partial class TabbedHostWindow : Window
                         PostMessage(info.ChildHwnd, WM_SKUA_THROTTLE, new IntPtr(1), IntPtr.Zero);
                     }
 
-                    SetWindowPos(info.ChildHwnd, IntPtr.Zero, -32000, -32000, 0, 0, baseFlags | SWP_NOSIZE);
+                    // Keep inactive tabs hidden instead of moving them off-screen with an async
+                    // SWP_SHOWWINDOW request that could race with tray hide/show.
+                    ShowWindow(info.ChildHwnd, SW_HIDE);
                 }
             }
         }
