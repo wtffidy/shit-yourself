@@ -221,6 +221,7 @@ public partial class TabbedHostWindow : Window
     }
 
     private readonly string[] _initialArgs;
+    private bool _initialInstanceStarted = false;
     private readonly Dictionary<TabItem, TabInfo> _tabs = new();
     private bool _needsReposition = false;
     private bool _isRepositioning = false;
@@ -436,7 +437,13 @@ public partial class TabbedHostWindow : Window
         }
         catch { }
 
-        AddNewInstance(_initialArgs);
+        // Avalonia can raise Opened again after a hidden window is shown. Only launch
+        // the startup instance once; subsequent tray restores must reuse existing tabs.
+        if (!_initialInstanceStarted)
+        {
+            _initialInstanceStarted = true;
+            AddNewInstance(_initialArgs);
+        }
     }
 
     private IntPtr HostWindowSubclassProc(IntPtr hWnd, uint uMsg, IntPtr wParam, IntPtr lParam, nuint uIdSubclass, IntPtr dwRefData)
