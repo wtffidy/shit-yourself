@@ -299,7 +299,7 @@ public partial class TabbedHostWindow : Window
         PositionChanged += (s, e) => OnWindowPositionChanged(e.Point);
         SizeChanged += (s, e) => { DoReposition(); UpdateTabScrollButtons(); };
         
-        PropertyChanged += (s, e) => { if (e.Property == WindowStateProperty || e.Property == IsVisibleProperty) DoReposition(); };
+        PropertyChanged += (s, e) => { if (e.Property == WindowStateProperty || e.Property == IsVisibleProperty) ScheduleReposition(); };
         Activated += (s, e) => { DoReposition(); UpdateTabScrollButtons(); };
         Closing += OnWindowClosing;
         Closed += OnWindowClosed;
@@ -1321,9 +1321,22 @@ public partial class TabbedHostWindow : Window
         }
     }
 
+    private bool _repositionScheduled = false;
+
     private void ScheduleReposition()
     {
         _needsReposition = true;
+        if (_repositionScheduled || _isClosing) return;
+
+        _repositionScheduled = true;
+        Dispatcher.UIThread.Post(() =>
+        {
+            _repositionScheduled = false;
+            if (_isClosing || !IsLoaded) return;
+
+            _needsReposition = false;
+            DoReposition();
+        }, DispatcherPriority.Render);
     }
 
     private void DoReposition()
