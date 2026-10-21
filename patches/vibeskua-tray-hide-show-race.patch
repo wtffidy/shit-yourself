@@ -1,0 +1,25 @@
+From 2fc9bb57b1bcc61703afe23363dbfbd20c17fc93 Mon Sep 17 00:00:00 2001
+Subject: [PATCH] VibeSkua: make child HWND repositioning synchronous
+
+Rapid tray hide/show can trigger repeated host visibility and activation events
+while child game HWNDs are being repositioned. Avoid queuing this SetWindowPos
+operation asynchronously; perform it synchronously on the host UI thread so
+the native reposition request does not remain pending across a visibility
+transition.
+
+This is a targeted mitigation for the suspected race, not a confirmed root
+cause. Test rapid hide/show with one and multiple tabs before treating it as
+fixed.
+
+---
+ Skua.App.Avalonia/Views/TabbedHostWindow.axaml.cs | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/Skua.App.Avalonia/Views/TabbedHostWindow.axaml.cs b/Skua.App.Avalonia/Views/TabbedHostWindow.axaml.cs
+--- a/Skua.App.Avalonia/Views/TabbedHostWindow.axaml.cs
++++ b/Skua.App.Avalonia/Views/TabbedHostWindow.axaml.cs
+@@ -1,1 +1,1 @@
+-                        SWP_SHOWWINDOW | SWP_NOACTIVATE | SWP_ASYNCWINDOWPOS | SWP_NOZORDER);
++                        SWP_SHOWWINDOW | SWP_NOACTIVATE | SWP_NOZORDER);
+--
+2.0.0
