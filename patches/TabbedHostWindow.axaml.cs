@@ -1371,14 +1371,9 @@ public partial class TabbedHostWindow : Window
 
             if (WindowState == WindowState.Minimized || !IsVisible)
             {
-                // Hide embedded child windows instead of queuing asynchronous off-screen
-                // SetWindowPos calls. Rapid tray hide/show cycles can otherwise leave stale
-                // native position requests queued in the child processes.
-                foreach (var info in _tabs.Values)
-                {
-                    if (info.ChildHwnd != IntPtr.Zero)
-                        ShowWindow(info.ChildHwnd, SW_HIDE);
-                }
+                // Let Windows handle visibility for owned windows when the host is hidden.
+                // Explicitly hiding the embedded Flash HWND can leave the child renderer black
+                // after restoration, so do not send SW_HIDE to child windows here.
                 return;
             }
 
