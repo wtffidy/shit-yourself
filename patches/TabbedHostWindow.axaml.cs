@@ -1571,7 +1571,12 @@ public partial class TabbedHostWindow : Window
 
         if (_tabs.Count == 0 || !InstancesTabControl.Items.OfType<TabItem>().Any())
         {
-            Close();
+            // Keep the host window alive when the final account tab closes.
+            // This allows the user to open another tab without restarting VibeSkua.
+            _lastSelectedTab = null;
+            _lastActiveHwnd = IntPtr.Zero;
+            _isGridViewEnabled = false;
+            ScheduleReposition();
             return;
         }
 
