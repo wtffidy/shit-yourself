@@ -1596,6 +1596,15 @@ public partial class TabbedHostWindow : Window
             _lastSelectedTab = null;
             _lastActiveHwnd = IntPtr.Zero;
             _isGridViewEnabled = false;
+
+            // Explicitly keep the host alive and visible after the final child exits.
+            // The host is the desktop MainWindow, so closing a child tab must not leave
+            // the application with no visible window or trigger an accidental shutdown.
+            if (!IsVisible)
+                Show();
+            if (WindowState == WindowState.Minimized)
+                WindowState = WindowState.Normal;
+            Activate();
             ScheduleReposition();
             return;
         }
