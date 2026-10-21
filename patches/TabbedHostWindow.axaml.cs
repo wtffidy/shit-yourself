@@ -1357,10 +1357,13 @@ public partial class TabbedHostWindow : Window
 
             if (WindowState == WindowState.Minimized || !IsVisible)
             {
+                // Hide embedded child windows instead of queuing asynchronous off-screen
+                // SetWindowPos calls. Rapid tray hide/show cycles can otherwise leave stale
+                // native position requests queued in the child processes.
                 foreach (var info in _tabs.Values)
                 {
                     if (info.ChildHwnd != IntPtr.Zero)
-                        SetWindowPos(info.ChildHwnd, HWND_TOP, -32000, -32000, 0, 0, SWP_SHOWWINDOW | SWP_NOACTIVATE | SWP_ASYNCWINDOWPOS | SWP_NOSIZE);
+                        ShowWindow(info.ChildHwnd, SW_HIDE);
                 }
                 return;
             }
