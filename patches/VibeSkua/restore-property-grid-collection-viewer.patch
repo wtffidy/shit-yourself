@@ -48,6 +48,7 @@ diff --git a/Skua.Shared.Avalonia/Controls/PropertyGridControl.axaml.cs b/Skua.S
 +using Avalonia.Layout;
  using System;
 +using System.Collections;
++using System.Collections.Generic;
  using System.Collections.ObjectModel;
  using System.ComponentModel;
 +using System.Linq;
