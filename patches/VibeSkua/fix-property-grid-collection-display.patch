@@ -1,0 +1,105 @@
+diff --git a/Skua.Shared.Avalonia/Controls/PropertyGridControl.axaml.cs b/Skua.Shared.Avalonia/Controls/PropertyGridControl.axaml.cs
+index ac29e8a..0000000 100644
+--- a/Skua.Shared.Avalonia/Controls/PropertyGridControl.axaml.cs
++++ b/Skua.Shared.Avalonia/Controls/PropertyGridControl.axaml.cs
+@@ -1,6 +1,7 @@
+ using Avalonia;
+ using Avalonia.Controls;
+ using System;
++using System.Collections;
+ using System.Collections.ObjectModel;
+ using System.ComponentModel;
+ using System.Reflection;
+@@ -54,11 +55,7 @@ public partial class PropertyGridControl : UserControl
+             try
+             {
+                 object? val = pi.GetValue(obj);
+-                string strVal = val switch
+-                {
+-                    null => "null",
+-                    bool b => b ? "True" : "False",
+-                    _ => val.ToString() ?? string.Empty
+-                };
++                string strVal = FormatValue(val);
+ 
+                 string desc = pi.GetCustomAttribute<DescriptionAttribute>()?.Description ?? pi.Name;
+                 string category = pi.GetCustomAttribute<CategoryAttribute>()?.Category ?? "General";
+@@ -77,6 +74,75 @@ public partial class PropertyGridControl : UserControl
+         UpdateVisibility();
+     }
+ 
++    /// <summary>
++    /// Formats property values without displaying collection type names.
++    /// </summary>
++    private static string FormatValue(object? value)
++    {
++        if (value == null)
++            return "null";
++
++        if (value is bool booleanValue)
++            return booleanValue ? "True" : "False";
++
++        if (value is string stringValue)
++            return stringValue;
++
++        if (value is IEnumerable enumerable)
++        {
++            const int maxItems = 20;
++            System.Text.StringBuilder builder = new("[");
++            int count = 0;
++
++            foreach (object? item in enumerable)
++            {
++                if (count >= maxItems)
++                {
++                    builder.Append(", ...");
++                    break;
++                }
++
++                if (count > 0)
++                    builder.Append(", ");
++
++                builder.Append(FormatCollectionItem(item));
++                count++;
++            }
++
++            builder.Append(']');
++            return builder.ToString();
++        }
++
++        return value.ToString() ?? string.Empty;
++    }
++
++    /// <summary>
++    /// Formats collection entries using their ID and name when those properties are available.
++    /// </summary>
++    private static string FormatCollectionItem(object? item)
++    {
++        if (item == null)
++            return "null";
++
++        Type itemType = item.GetType();
++        PropertyInfo? idProperty = itemType.GetProperty("ID") ?? itemType.GetProperty("Id");
++        PropertyInfo? nameProperty = itemType.GetProperty("Name");
++
++        if (idProperty != null && nameProperty != null)
++        {
++            object? id = idProperty.GetValue(item);
++            object? name = nameProperty.GetValue(item);
++
++            if (id != null && name != null)
++                return $"[{id}] {name}";
++            if (name != null)
++                return name.ToString() ?? string.Empty;
++        }
++
++        return item.ToString() ?? itemType.Name;
++    }
++
+     private void UpdateVisibility()
+     {
+         bool hasProps = _properties.Count > 0;
+         EmptyTextBlock.IsVisible = !hasProps;
+         ContentScrollViewer.IsVisible = hasProps;
+     }
+ }
