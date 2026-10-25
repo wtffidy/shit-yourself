@@ -1,0 +1,181 @@
+diff --git a/Skua.Shared.Avalonia/Controls/PropertyGridControl.axaml b/Skua.Shared.Avalonia/Controls/PropertyGridControl.axaml
+--- a/Skua.Shared.Avalonia/Controls/PropertyGridControl.axaml
++++ b/Skua.Shared.Avalonia/Controls/PropertyGridControl.axaml
+@@ -20,14 +20,33 @@
+           <DataTemplate>
+             <Grid ColumnDefinitions="140,*"
+                   Margin="4,2"
+                   Background="Transparent">
+               <TextBlock Grid.Column="0"
+                          FontWeight="SemiBold"
+                          VerticalAlignment="Center"
+                          Text="{Binding Name}"
+                          Opacity="0.8"
+                          ToolTip.Tip="{Binding Description}" />
+               <TextBox Grid.Column="1"
+                        Classes="option-pill-input"
+                        IsReadOnly="True"
+                        VerticalAlignment="Center"
+-                       Text="{Binding Value}" />
++                       Text="{Binding Value}"
++                       IsVisible="{Binding IsNotCollection}" />
++              <StackPanel Grid.Column="1"
++                          Orientation="Horizontal"
++                          Spacing="6"
++                          IsVisible="{Binding IsCollection}">
++                <TextBlock Text="{Binding Value}"
++                           VerticalAlignment="Center" />
++                <Button Content="..."
++                        Padding="8,2"
++                        MinWidth="32"
++                        VerticalAlignment="Center"
++                        Click="OpenCollection_Click" />
++              </StackPanel>
+             </Grid>
+           </DataTemplate>
+         </ItemsControl.ItemTemplate>
+       </ItemsControl>
+     </ScrollViewer>
+   </Grid>
+ </UserControl>
+diff --git a/Skua.Shared.Avalonia/Controls/PropertyGridControl.axaml.cs b/Skua.Shared.Avalonia/Controls/PropertyGridControl.axaml.cs
+--- a/Skua.Shared.Avalonia/Controls/PropertyGridControl.axaml.cs
++++ b/Skua.Shared.Avalonia/Controls/PropertyGridControl.axaml.cs
+@@ -1,7 +1,10 @@
+ using Avalonia;
+ using Avalonia.Controls;
++using Avalonia.Controls.Primitives;
++using Avalonia.Layout;
+ using System;
++using System.Collections;
+ using System.Collections.ObjectModel;
+ using System.ComponentModel;
++using System.Linq;
+ using System.Reflection;
+ 
+ namespace Skua.Shared.Avalonia.Controls;
+@@ -10,6 +13,10 @@ public class PropertyItemRow
+     public string Name { get; set; } = string.Empty;
+     public string Value { get; set; } = string.Empty;
+     public string Description { get; set; } = string.Empty;
+     public string Category { get; set; } = "General";
++    public bool IsCollection { get; set; }
++    public bool IsNotCollection => !IsCollection;
++    public IReadOnlyList<object> CollectionItems { get; set; } = Array.Empty<object>();
+ }
+ 
+ public partial class PropertyGridControl : UserControl
+@@ -56,11 +63,26 @@ public partial class PropertyGridControl : UserControl
+             try
+             {
+                 object? val = pi.GetValue(obj);
++                bool isCollection = val is IEnumerable && val is not string;
++                IReadOnlyList<object> collectionItems = Array.Empty<object>();
++
++                if (isCollection && val is IEnumerable enumerable)
++                {
++                    collectionItems = enumerable.Cast<object?>()
++                        .Where(item => item != null)
++                        .Cast<object>()
++                        .ToArray();
++                }
++
+                 string strVal = val switch
+                 {
+                     null => "null",
+                     bool b => b ? "True" : "False",
++                    _ when isCollection => $"{collectionItems.Count} items",
+                     _ => val.ToString() ?? string.Empty
+                 };
+ 
+                 string desc = pi.GetCustomAttribute<DescriptionAttribute>()?.Description ?? pi.Name;
+                 string category = pi.GetCustomAttribute<CategoryAttribute>()?.Category ?? "General";
+@@ -69,6 +91,8 @@ public partial class PropertyGridControl : UserControl
+                     Name = pi.Name,
+                     Value = strVal,
+                     Description = desc,
+-                    Category = category
++                    Category = category,
++                    IsCollection = isCollection,
++                    CollectionItems = collectionItems
+                 });
+             }
+             catch
+@@ -82,4 +106,73 @@ public partial class PropertyGridControl : UserControl
+         ContentScrollViewer.IsVisible = hasProps;
+     }
++
++    private void OpenCollection_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
++    {
++        if (sender is not Button { DataContext: PropertyItemRow row } || row.CollectionItems.Count == 0)
++            return;
++
++        ListBox entriesList = new()
++        {
++            ItemsSource = row.CollectionItems,
++            SelectedIndex = 0
++        };
++
++        PropertyGridControl selectedItemProperties = new();
++        selectedItemProperties.SelectedObject = entriesList.SelectedItem;
++        entriesList.SelectionChanged += (_, _) => selectedItemProperties.SelectedObject = entriesList.SelectedItem;
++
++        Grid content = new()
++        {
++            RowDefinitions = new RowDefinitions("*,Auto"),
++            ColumnDefinitions = new ColumnDefinitions("*,5,*"),
++            Margin = new Thickness(10)
++        };
++
++        Grid.SetRow(entriesList, 0);
++        Grid.SetColumn(entriesList, 0);
++        Grid.SetRow(selectedItemProperties, 0);
++        Grid.SetColumn(selectedItemProperties, 2);
++
++        GridSplitter splitter = new()
++        {
++            Width = 5,
++            HorizontalAlignment = HorizontalAlignment.Stretch,
++            VerticalAlignment = VerticalAlignment.Stretch
++        };
++        Grid.SetRow(splitter, 0);
++        Grid.SetColumn(splitter, 1);
++
++        Button closeButton = new()
++        {
++            Content = "Close",
++            HorizontalAlignment = HorizontalAlignment.Right,
++            Margin = new Thickness(0, 10, 0, 0)
++        };
++        Grid.SetRow(closeButton, 1);
++        Grid.SetColumn(closeButton, 0);
++        Grid.SetColumnSpan(closeButton, 3);
++
++        Window editor = new()
++        {
++            Title = $"{row.Name} - Collection Viewer",
++            Width = 700,
++            Height = 500,
++            Content = content,
++            WindowStartupLocation = WindowStartupLocation.CenterOwner
++        };
++
++        content.Children.Add(entriesList);
++        content.Children.Add(splitter);
++        content.Children.Add(selectedItemProperties);
++        content.Children.Add(closeButton);
++
++        closeButton.Click += (_, _) => editor.Close();
++        editor.KeyDown += (_, args) =>
++        {
++            if (args.Key == Avalonia.Input.Key.Escape)
++                editor.Close();
++        };
++
++        Window? owner = TopLevel.GetTopLevel(this) as Window;
++        if (owner != null)
++            editor.Show(owner);
++        else
++            editor.Show();
++    }
+ }
