@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Potato Peeler Verification Slider</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    
+    @keyframes pulseGlow {
+      0%, 100% { box-shadow: 0 0 25px rgba(217, 119, 6, 0.25), inset 0 0 20px rgba(217, 119, 6, 0.15); }
+      50% { box-shadow: 0 0 45px rgba(217, 119, 6, 0.45), inset 0 0 30px rgba(217, 119, 6, 0.25); }
+    }
+
+    @keyframes successGlow {
+      0%, 100% { box-shadow: 0 0 35px rgba(34, 197, 94, 0.4), inset 0 0 25px rgba(34, 197, 94, 0.25); }
+      50% { box-shadow: 0 0 60px rgba(34, 197, 94, 0.7), inset 0 0 35px rgba(34, 197, 94, 0.45); }
+    }
+
+    .slider-container {
+      animation: pulseGlow 4s infinite ease-in-out;
+      transition: border-color 0.5s ease, box-shadow 0.5s ease;
+    }
+
+    .slider-container.verified {
+      animation: successGlow 2s infinite ease-in-out;
+      border-color: rgba(34, 197, 94, 0.7);
+    }
+
+    .peeler-handle {
+      will-change: transform;
+      touch-action: none;
+    }
+
+    .peeler-handle.active {
+      cursor: grabbing !important;
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col items-center justify-center p-4 sm:p-6 overflow-x-hidden">
+
+  <!-- Background Decorative Ambient Lights -->
+  <div class="fixed inset-0 pointer-events-none overflow-hidden">
+    <div class="absolute -top-40 -left-40 w-96 h-96 bg-amber-700/10 rounded-full blur-3xl"></div>
+    <div class="absolute -bottom-40 -right-40 w-96 h-96 bg-emerald-600/10 rounded-full blur-3xl"></div>
+  </div>
+
+  <!-- Main Card Container -->
+  <div class="relative z-10 w-full max-w-2xl bg-slate-900/90 backdrop-blur-xl border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl shadow-black/90 flex flex-col items-center">
+    
+    <!-- Header -->
+    <div class="text-center mb-8">
+      <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-800/80 border border-slate-700/60 text-xs font-semibold text-amber-400 mb-3 shadow-inner">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+        <span>Security Verification</span>
+      </div>
+      <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">Slide to Peel Potato</h1>
+      <p class="text-slate-400 text-sm sm:text-base mt-2">Drag the peeler from left to right to skin the raw potato & verify humanity.</p>
+    </div>
+
+    <!-- Interactive Slider Box -->
+    <div id="sliderTrack" class="slider-container relative w-full h-44 sm:h-52 bg-slate-950/90 rounded-2xl border-2 border-amber-600/30 overflow-hidden cursor-pointer flex items-center justify-center select-none shadow-inner">
+      
+      <!-- Instructions Overlay Text -->
+      <div id="dragHint" class="absolute inset-0 flex items-center justify-center pointer-events-none transition-opacity duration-300 z-0">
+        <div class="flex items-center gap-2 text-slate-500 text-xs sm:text-sm font-bold uppercase tracking-widest pl-16">
+          <span>Peel To Verify</span>
+          <svg class="w-4 h-4 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
+        </div>
+      </div>
+
+      <!-- Canvas for Potato Rendering & Peel Animation -->
+      <canvas id="potatoCanvas" class="absolute inset-0 w-full h-full pointer-events-none z-10"></canvas>
+
+      <!-- Peeler Handle (Draggable Element) -->
+      <div id="peelerHandle" class="peeler-handle absolute top-0 left-0 h-full z-20 flex items-center justify-center cursor-grab touch-none" style="width: 72px; transform: translateX(0px);">
+        
+        <!-- Detailed Y-Peeler Graphic SVG -->
+        <div class="relative group filter drop-shadow-[0_10px_20px_rgba(0,0,0,0.8)] transition-transform duration-150 group-hover:scale-105">
+          <svg class="w-18 h-32 sm:w-20 sm:h-36 text-red-500" viewBox="0 0 100 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- Steel Y-Frame -->
+            <path d="M 30 105 L 18 45 C 16 35 24 24 35 22 L 65 22 C 76 24 84 35 82 45 L 70 105 Z" fill="url(#metalGradient)" stroke="#475569" stroke-width="2.5"/>
+            
+            <!-- Blade Slot Holder -->
+            <rect x="28" y="28" width="44" height="10" rx="2" fill="#0f172a" stroke="#64748b" stroke-width="1.5"/>
+            <!-- Sharp Stainless Steel Swivel Blade -->
+            <rect x="32" y="31" width="36" height="3" rx="1" fill="#f8fafc"/>
+            <line x1="33" y1="32.5" x2="67" y2="32.5" stroke="#94a3b8" stroke-width="1"/>
+
+            <!-- Handle Grip -->
+            <path d="M 38 88 L 38 148 C 38 154 43 158 50 158 C 57 158 62 154 62 148 L 62 88 Z" fill="url(#handleGradient)" stroke="#7f1d1d" stroke-width="2"/>
+            
+            <!-- Rubber Grip Ribs -->
+            <line x1="43" y1="105" x2="57" y2="105" stroke="#450a0a" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="43" y1="117" x2="57" y2="117" stroke="#450a0a" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="43" y1="129" x2="57" y2="129" stroke="#450a0a" stroke-width="2.5" stroke-linecap="round"/>
+            
+            <!-- Hanging Hole -->
+            <circle cx="50" cy="147" r="4.5" fill="#090d16"/>
+
+            <!-- Gradients -->
+            <defs>
+              <linearGradient id="metalGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#f1f5f9" />
+                <stop offset="40%" stop-color="#94a3b8" />
+                <stop offset="100%" stop-color="#475569" />
+              </linearGradient>
+              <linearGradient id="handleGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#ef4444" />
+                <stop offset="30%" stop-color="#dc2626" />
+                <stop offset="100%" stop-color="#881337" />
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Status & Progress Bar -->
+    <div class="w-full mt-6 space-y-3">
+      <div class="flex justify-between items-center text-xs sm:text-sm font-semibold">
+        <span id="statusLabel" class="text-slate-400 transition-colors">Progress: 0%</span>
+        <span id="percentText" class="text-amber-400 font-mono font-bold">0% PEELED</span>
+      </div>
+
+      <!-- Outer Progress Track -->
+      <div class="w-full bg-slate-950 rounded-full h-3 overflow-hidden border border-slate-800 p-0.5">
+        <div id="progressBar" class="bg-gradient-to-r from-amber-600 via-amber-400 to-yellow-300 h-full w-0 rounded-full transition-all duration-75 shadow-[0_0_12px_rgba(251,191,36,0.6)]"></div>
+      </div>
+    </div>
+
+    <!-- Control Action Buttons -->
+    <div class="mt-8 flex items-center justify-between w-full">
+      <button id="resetBtn" class="px-4 py-2.5 text-xs font-semibold text-slate-400 hover:text-white bg-slate-800/60 hover:bg-slate-800 border border-slate-700/50 rounded-xl transition-all flex items-center gap-2 active:scale-95">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+        <span>Reset Potato</span>
+      </button>
+
+      <div id="verifiedBadge" class="opacity-0 transition-opacity duration-300 flex items-center gap-2 px-3.5 py-1.5 bg-emerald-500/10 border border-emerald-500/30 rounded-xl text-emerald-400 text-xs font-bold">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+        <span>HUMAN VERIFIED</span>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const sliderTrack = document.getElementById('sliderTrack');
+      const peelerHandle = document.getElementById('peelerHandle');
+      const canvas = document.getElementById('potatoCanvas');
+      const ctx = canvas.getContext('2d');
+      
+      const progressBar = document.getElementById('progressBar');
+      const percentText = document.getElementById('percentText');
+      const statusLabel = document.getElementById('statusLabel');
+      const verifiedBadge = document.getElementById('verifiedBadge');
+      const dragHint = document.getElementById('dragHint');
+      const resetBtn = document.getElementById('resetBtn');
+
+      let isDragging = false;
+      let handleWidth = 72;
+      let maxDrag = 0;
+      let currentX = 0;
+      let peeledProgress = 0;
+      let isVerified = false;
+
+      let skinCanvas, fleshCanvas;
+      let potatoOutlinePoints = [];
+      let potatoEyes = [];
+      let soilSmudges = [];
+
+      let particles = [];
+      let peelCurlAngle = 0;
+
+      function setupCanvas() {
+        const rect = sliderTrack.getBoundingClientRect();
+        canvas.width = rect.width;
+        canvas.height = rect.height;
+        handleWidth = peelerHandle.offsetWidth || 72;
+        maxDrag = canvas.width - handleWidth;
+
+        generateOrganicPotatoOutline();
+        generatePotatoTextures();
+        render();
+      }
+
+      // 1. Generate Lumpy, Irregular Organic Potato Outline
+      function generateOrganicPotatoOutline() {
+        potatoOutlinePoints = [];
+        const w = canvas.width;
+        const h = canvas.height;
+
+        const marginX = 25;
+        const marginY = 22;
+        const width = w - marginX * 2;
+        const height = h - marginY * 2;
+        const cx = w / 2;
+        const cy = h / 2;
+
+        const numPoints = 36;
+        for (let i = 0; i < numPoints; i++) {
+          const angle = (i / numPoints) * Math.PI * 2;
+          
+          // Organic uneven radii using multiple sine harmonics
+          const bump1 = Math.sin(angle * 3) * 12;
+          const bump2 = Math.cos(angle * 5) * 8;
+          const bump3 = Math.sin(angle * 2 + 1) * 15;
+
+          const rx = (width / 2) + bump1 + bump2;
+          const ry = (height / 2) + bump2 + bump3;
+
+          const px = cx + Math.cos(angle) * rx;
+          const py = cy + Math.sin(angle) * ry;
+
+          potatoOutlinePoints.push({ x: px, y: py });
+        }
+
+        // Generate Potato "Eyes" (Dimples with dark spots)
+        potatoEyes = [];
+        const eyeCount = 10;
+        for (let i = 0; i < eyeCount; i++) {
+          const ex = Math.random() * (width - 60) + marginX + 30;
+          const ey = Math.random() * (height - 30) + marginY + 15;
+          const size = Math.random() * 4 + 3;
+          potatoEyes.push({ x: ex, y: ey, size: size, angle: Math.random() * Math.PI });
+        }
+
+        // Generate Earthy Soil Smudges
+        soilSmudges = [];
+        for (let i = 0; i < 7; i++) {
+          soilSmudges.push({
+            x: Math.random() * (width - 80) + marginX + 40,
+            y: Math.random() * (height - 40) + marginY + 20,
+            rx: Math.random() * 25 + 15,
+            ry: Math.random() * 12 + 8,
+            angle: Math.random() * Math.PI
+          });
+        }
+      }
+
+      // Draw path using smooth curve through control points
+      function drawPotatoShapePath(targetCtx) {
+        if (potatoOutlinePoints.length === 0) return;
+        targetCtx.beginPath();
+        const p0 = potatoOutlinePoints[0];
+        targetCtx.moveTo(p0.x, p0.y);
+
+        for (let i = 0; i < potatoOutlinePoints.length; i++) {
+          const current = potatoOutlinePoints[i];
+          const next = potatoOutlinePoints[(i + 1) % potatoOutlinePoints.length];
+          const midX = (current.x + next.x) / 2;
+          const midY = (current.y + next.y) / 2;
+          targetCtx.quadraticCurveTo(current.x, current.y, midX, midY);
+        }
+        targetCtx.closePath();
+      }
+
+      // 2. Render High-Detail Procedural Potato Textures
+      function generatePotatoTextures() {
+        const w = canvas.width;
+        const h = canvas.height;
+
+        // --- Inner Raw Peeled Flesh ---
+        fleshCanvas = document.createElement('canvas');
+        fleshCanvas.width = w;
+        fleshCanvas.height = h;
+        const fCtx = fleshCanvas.getContext('2d');
+
+        // Pale Golden Raw Potato Flesh Gradient
+        const fleshGrad = fCtx.createRadialGradient(w/2, h/2, 20, w/2, h/2, w/2);
+        fleshGrad.addColorStop(0, '#fffbeb');   // Yellow-50
+        fleshGrad.addColorStop(0.4, '#fef08a'); // Yellow-100
+        fleshGrad.addColorStop(0.85, '#fde047');// Yellow-300
+        fleshGrad.addColorStop(1, '#eab308');   // Yellow-500
+        fCtx.fillStyle = fleshGrad;
+        fCtx.fillRect(0, 0, w, h);
+
+        // Subtle fine starch fibers & moist flesh noise
+        for (let i = 0; i < 800; i++) {
+          fCtx.fillStyle = Math.random() > 0.5 ? 'rgba(255, 255, 255, 0.3)' : 'rgba(234, 179, 8, 0.12)';
+          fCtx.beginPath();
+          fCtx.arc(Math.random() * w, Math.random() * h, Math.random() * 1.8 + 0.5, 0, Math.PI * 2);
+          fCtx.fill();
+        }
+
+        // Concentric moist starch rings
+        fCtx.strokeStyle = 'rgba(254, 240, 138, 0.25)';
+        fCtx.lineWidth = 3;
+        for (let r = 30; r < w/2; r += 25) {
+          fCtx.beginPath();
+          fCtx.ellipse(w/2, h/2, r, r * 0.45, 0, 0, Math.PI * 2);
+          fCtx.stroke();
+        }
+
+        // --- Outer Earthy Brown Skin ---
+        skinCanvas = document.createElement('canvas');
+        skinCanvas.width = w;
+        skinCanvas.height = h;
+        const sCtx = skinCanvas.getContext('2d');
+
+        // Earthy Russet Potato Skin Radial Gradient
+        const skinGrad = sCtx.createRadialGradient(w/2, h/2 - 10, 30, w/2, h/2, w/2);
+        skinGrad.addColorStop(0, '#a16207');   // Yellow-700
+        skinGrad.addColorStop(0.5, '#78350f'); // Yellow-900
+        skinGrad.addColorStop(0.85, '#543310'); // Dark Russet
+        skinGrad.addColorStop(1, '#382009');   // Deep Soil Brown
+        sCtx.fillStyle = skinGrad;
+        sCtx.fillRect(0, 0, w, h);
+
+        // Dense skin speckles, pore texture & roughness
+        for (let i = 0; i < 1500; i++) {
+          sCtx.fillStyle = Math.random() > 0.45 ? 'rgba(30, 15, 5, 0.4)' : 'rgba(251, 191, 36, 0.12)';
+          sCtx.beginPath();
+          sCtx.arc(Math.random() * w, Math.random() * h, Math.random() * 2.2 + 0.4, 0, Math.PI * 2);
+          sCtx.fill();
+        }
+
+        // Render Soil Dirt Smudges
+        soilSmudges.forEach(smudge => {
+          sCtx.save();
+          sCtx.translate(smudge.x, smudge.y);
+          sCtx.rotate(smudge.angle);
+          const smgGrad = sCtx.createRadialGradient(0, 0, 2, 0, 0, smudge.rx);
+          smgGrad.addColorStop(0, 'rgba(24, 12, 4, 0.7)');
+          smgGrad.addColorStop(0.7, 'rgba(45, 24, 9, 0.3)');
+          smgGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+          sCtx.fillStyle = smgGrad;
+          sCtx.beginPath();
+          sCtx.ellipse(0, 0, smudge.rx, smudge.ry, 0, 0, Math.PI * 2);
+          sCtx.fill();
+          sCtx.restore();
+        });
+
+        // Render Realistic Potato Eyes (Dimples + Creases)
+        potatoEyes.forEach(eye => {
+          sCtx.save();
+          sCtx.translate(eye.x, eye.y);
+          sCtx.rotate(eye.angle);
+
+          // Outer dimple shadow
+          sCtx.fillStyle = 'rgba(28, 13, 4, 0.55)';
+          sCtx.beginPath();
+          sCtx.ellipse(0, 0, eye.size * 2, eye.size, 0, 0, Math.PI * 2);
+          sCtx.fill();
+
+          // Crease arc
+          sCtx.strokeStyle = 'rgba(15, 6, 1, 0.85)';
+          sCtx.lineWidth = 1.8;
+          sCtx.beginPath();
+          sCtx.arc(0, 0, eye.size, 0.2, Math.PI - 0.2);
+          sCtx.stroke();
+
+          // Tiny bud highlight
+          sCtx.fillStyle = 'rgba(217, 119, 6, 0.6)';
+          sCtx.beginPath();
+          sCtx.arc(0, -1, 1.5, 0, Math.PI * 2);
+          sCtx.fill();
+
+          sCtx.restore();
+        });
+      }
+
+      // 3. Render Animation Loop
+      function render() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        const w = canvas.width;
+        const h = canvas.height;
+        const peelX = currentX + handleWidth / 2;
+
+        ctx.save();
+
+        // Clip to irregular organic potato shape
+        drawPotatoShapePath(ctx);
+        ctx.clip();
+
+        // A. Base Layer: Peeled Inner Flesh
+        ctx.drawImage(fleshCanvas, 0, 0);
+
+        // B. Top Layer: Outer Brown Skin (only unpeeled right side)
+        ctx.save();
+        ctx.beginPath();
+        ctx.rect(peelX, 0, w - peelX, h);
+        ctx.clip();
+        ctx.drawImage(skinCanvas, 0, 0);
+
+        // Dark cutting shadow along blade edge
+        const cutShadow = ctx.createLinearGradient(peelX - 8, 0, peelX + 4, 0);
+        cutShadow.addColorStop(0, 'rgba(0,0,0,0)');
+        cutShadow.addColorStop(0.6, 'rgba(0,0,0,0.5)');
+        cutShadow.addColorStop(1, 'rgba(0,0,0,0.8)');
+        ctx.fillStyle = cutShadow;
+        ctx.fillRect(peelX - 8, 0, 12, h);
+        ctx.restore();
+
+        // C. 3D Volume Surface Shading & Ambient Occlusion
+        const volumeGrad = ctx.createLinearGradient(0, 0, 0, h);
+        volumeGrad.addColorStop(0, 'rgba(255, 255, 255, 0.25)'); // Top highlight
+        volumeGrad.addColorStop(0.35, 'rgba(255, 255, 255, 0.05)');
+        volumeGrad.addColorStop(0.7, 'rgba(0, 0, 0, 0.15)');
+        volumeGrad.addColorStop(1, 'rgba(0, 0, 0, 0.55)');      // Bottom deep shadow
+        ctx.fillStyle = volumeGrad;
+        ctx.fill();
+
+        ctx.restore();
+
+        // D. Active Curling Peel Ribbon attached to blade
+        if (isDragging && currentX > 10 && currentX < maxDrag - 10) {
+          drawActivePeelCurl(peelX, h);
+        }
+
+        // E. Render Falling Debris Particles
+        updateAndDrawParticles();
+
+        requestAnimationFrame(render);
+      }
+
+      // Render Curling Peel Ribbon at Blade Edge
+      function drawActivePeelCurl(peelX, h) {
+        peelCurlAngle += 0.15;
+        const curlY = h / 2 + Math.sin(peelCurlAngle * 0.5) * 15;
+
+        ctx.save();
+        ctx.translate(peelX - 6, curlY);
+
+        // Ribbon curl loop path
+        ctx.beginPath();
+        ctx.moveTo(0, -25);
+        ctx.bezierCurveTo(-25, -30, -35, 10, -10, 25);
+        ctx.bezierCurveTo(15, 35, 5, -15, -12, -20);
+        
+        // Ribbon fill - outer brown skin & yellow inner side
+        ctx.fillStyle = '#78350f';
+        ctx.fill();
+        ctx.lineWidth = 2.5;
+        ctx.strokeStyle = '#fde047';
+        ctx.stroke();
+
+        ctx.restore();
+      }
+
+      // Particle System for Falling Peel Shavings & Soil Debris
+      function spawnPeelParticles(x) {
+        if (Math.random() < 0.4) return;
+        const h = canvas.height;
+        
+        particles.push({
+          x: x - (Math.random() * 6),
+          y: Math.random() * (h - 50) + 25,
+          vx: -(Math.random() * 2.5 + 1.2),
+          vy: (Math.random() - 0.2) * 2.5 + 1.5, // Gravity fall
+          size: Math.random() * 7 + 5,
+          rotation: Math.random() * Math.PI * 2,
+          vRot: (Math.random() - 0.5) * 0.25,
+          life: 1.0,
+          decay: Math.random() * 0.025 + 0.015,
+          isSoil: Math.random() < 0.3
+        });
+      }
+
+      function updateAndDrawParticles() {
+        for (let i = particles.length - 1; i >= 0; i--) {
+          const p = particles[i];
+          p.x += p.vx;
+          p.y += p.vy;
+          p.vy += 0.12; // Gravity acceleration
+          p.rotation += p.vRot;
+          p.life -= p.decay;
+
+          if (p.life <= 0) {
+            particles.splice(i, 1);
+            continue;
+          }
+
+          ctx.save();
+          ctx.translate(p.x, p.y);
+          ctx.rotate(p.rotation);
+          ctx.globalAlpha = p.life;
+
+          if (p.isSoil) {
+            // Small brown soil speckle
+            ctx.fillStyle = '#382009';
+            ctx.beginPath();
+            ctx.arc(0, 0, p.size * 0.35, 0, Math.PI * 2);
+            ctx.fill();
+          } else {
+            // Curled Skin Ribbon Shaving
+            ctx.beginPath();
+            ctx.ellipse(0, 0, p.size, p.size * 0.45, 0.6, 0, Math.PI * 2);
+            ctx.fillStyle = '#78350f';
+            ctx.fill();
+
+            ctx.beginPath();
+            ctx.ellipse(-1, -1, p.size * 0.65, p.size * 0.25, 0.6, 0, Math.PI * 2);
+            ctx.fillStyle = '#fef08a';
+            ctx.fill();
+          }
+
+          ctx.restore();
+        }
+      }
+
+      // Drag Interaction Handling
+      function updateDrag(clientX) {
+        if (isVerified) return;
+
+        const rect = sliderTrack.getBoundingClientRect();
+        let offsetX = clientX - rect.left - handleWidth / 2;
+
+        if (offsetX < 0) offsetX = 0;
+        if (offsetX > maxDrag) offsetX = maxDrag;
+
+        if (offsetX > currentX) {
+          spawnPeelParticles(currentX + handleWidth / 2);
+        }
+
+        currentX = offsetX;
+        peeledProgress = currentX / maxDrag;
+
+        peelerHandle.style.transform = `translateX(${currentX}px)`;
+        const percentage = Math.round(peeledProgress * 100);
+        
+        progressBar.style.width = `${percentage}%`;
+        percentText.innerText = `${percentage}% PEELED`;
+
+        if (percentage > 5) {
+          dragHint.style.opacity = '0';
+        } else {
+          dragHint.style.opacity = '1';
+        }
+
+        if (peeledProgress >= 0.90) {
+          completeVerification();
+        }
+      }
+
+      function completeVerification() {
+        isVerified = true;
+        isDragging = false;
+        
+        currentX = maxDrag;
+        peelerHandle.style.transform = `translateX(${maxDrag}px)`;
+        progressBar.style.width = '100%';
+        percentText.innerText = '100% PEELED';
+        
+        sliderTrack.classList.add('verified');
+        statusLabel.innerText = 'Verification Successful!';
+        statusLabel.classList.remove('text-slate-400');
+        statusLabel.classList.add('text-emerald-400');
+        verifiedBadge.style.opacity = '1';
+        peelerHandle.style.cursor = 'default';
+
+        // Victory peel explosion burst
+        for (let i = 0; i < 35; i++) {
+          spawnPeelParticles(maxDrag + handleWidth / 2);
+        }
+      }
+
+      function resetSlider() {
+        isVerified = false;
+        isDragging = false;
+        currentX = 0;
+        peeledProgress = 0;
+        
+        peelerHandle.style.transform = `translateX(0px)`;
+        progressBar.style.width = '0%';
+        percentText.innerText = '0% PEELED';
+        dragHint.style.opacity = '1';
+        
+        sliderTrack.classList.remove('verified');
+        statusLabel.innerText = 'Progress: 0%';
+        statusLabel.classList.remove('text-emerald-400');
+        statusLabel.classList.add('text-slate-400');
+        verifiedBadge.style.opacity = '0';
+        peelerHandle.style.cursor = 'grab';
+
+        particles = [];
+        generateOrganicPotatoOutline();
+        generatePotatoTextures();
+      }
+
+      // Input Event Listeners
+      peelerHandle.addEventListener('mousedown', () => {
+        if (isVerified) return;
+        isDragging = true;
+        peelerHandle.classList.add('active');
+      });
+
+      window.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+        updateDrag(e.clientX);
+      });
+
+      window.addEventListener('mouseup', () => {
+        if (!isDragging) return;
+        isDragging = false;
+        peelerHandle.classList.remove('active');
+
+        if (!isVerified && peeledProgress < 0.90) {
+          smoothSnapBack();
+        }
+      });
+
+      peelerHandle.addEventListener('touchstart', () => {
+        if (isVerified) return;
+        isDragging = true;
+        peelerHandle.classList.add('active');
+      }, { passive: true });
+
+      window.addEventListener('touchmove', (e) => {
+        if (!isDragging || !e.touches[0]) return;
+        updateDrag(e.touches[0].clientX);
+      }, { passive: true });
+
+      window.addEventListener('touchend', () => {
+        if (!isDragging) return;
+        isDragging = false;
+        peelerHandle.classList.remove('active');
+
+        if (!isVerified && peeledProgress < 0.90) {
+          smoothSnapBack();
+        }
+      });
+
+      function smoothSnapBack() {
+        const snapInterval = setInterval(() => {
+          if (currentX <= 5 || isDragging) {
+            currentX = 0;
+            peeledProgress = 0;
+            peelerHandle.style.transform = `translateX(0px)`;
+            progressBar.style.width = '0%';
+            percentText.innerText = '0% PEELED';
+            dragHint.style.opacity = '1';
+            clearInterval(snapInterval);
+          } else {
+            currentX *= 0.75;
+            peeledProgress = currentX / maxDrag;
+            peelerHandle.style.transform = `translateX(${currentX}px)`;
+            const percentage = Math.round(peeledProgress * 100);
+            progressBar.style.width = `${percentage}%`;
+            percentText.innerText = `${percentage}% PEELED`;
+          }
+        }, 16);
+      }
+
+      resetBtn.addEventListener('click', resetSlider);
+      window.addEventListener('resize', setupCanvas);
+
+      setupCanvas();
+    });
+  </script>
+</body>
+</html>
